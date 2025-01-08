@@ -1,2 +1,2 @@
-path: "path_to_model.joblib
-features: ['feature_A', 'feature_B']
+path: "my_model(1).joblib
+features: ['DFA', 'D2']
