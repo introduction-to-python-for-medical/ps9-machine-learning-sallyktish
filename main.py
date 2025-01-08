@@ -1,30 +1,38 @@
+# Load necessary extensions for autoreloading (if in a Jupyter/Colab environment)
 %load_ext autoreload
 %autoreload 2
 
-# Download the data from your GitHub repository
-wget https://raw.githubusercontent.com/yotam-biu/ps9/main/parkinsons.csv -O /content/parkinsons.csv 
-import pandas as pd
+# Download the dataset
+!wget https://raw.githubusercontent.com/yotam-biu/ps9/main/parkinsons.csv -O /content/parkinsons.csv 
 
-df = pd.read_csv('parkinsons.csv')
-df.head()
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+import joblib
+
+# Load and preprocess the dataset
+df = pd.read_csv('/content/parkinsons.csv')
 selected_features = ['DFA', 'D2']
 target_feature = 'status'
-from sklearn.preprocessing import MinMaxScaler
 
 scaler = MinMaxScaler()
 df[selected_features] = scaler.fit_transform(df[selected_features])
-from sklearn.model_selection import train_test_split
 
 X = df[selected_features]
 y = df[target_feature]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-from sklearn.tree import DecisionTreeClassifier
 
+# Split into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train the Decision Tree model
 model = DecisionTreeClassifier(max_depth=1)
 model.fit(X_train, y_train)
-from sklearn.metrics import accuracy_score
-accuracy_score(y, model.predict(X))
-print (accuracy_score(y, model.predict(X)))
-import joblib
 
-joblib.dump(model, 'my_model(1).joblib')
+# Evaluate the model on the test set
+y_pred = model.predict(X_test)
+print("Test Set Accuracy:", accuracy_score(y_test, y_pred))
+
+# Save the model
+joblib.dump(model, 'my_model.joblib')
